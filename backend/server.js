@@ -2,7 +2,10 @@ const express = require("express");
 const products = require("./products.js");
 const dotenv = require('dotenv').config();
 const PORT = process.env.PORT || 5000;
+const connectDB = require('./config/db.js');
 
+// connect with DB
+connectDB();
 const app = express();
 
 app.get("/", (request, response) => {
