@@ -1,0 +1,24 @@
+{
+  "name": "bloom",
+  "version": "2.0.0",
+  "description": "Ecommerce application build with MERN stack and auth",
+  "homepage": "https://github.com/a3ela/Bloom-ecommerce#readme",
+  "bugs": {
+    "url": "https://github.com/a3ela/Bloom-ecommerce/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "license": "MIT",
+  "author": "Abel Sintayehu",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "start": "node --watch backend/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
