@@ -2,6 +2,7 @@ const express = require("express");
 const dotenv = require('dotenv').config();
 const PORT = process.env.PORT || 5000;
 const connectDB = require('./config/db.js');
+const { notFound, errorHandler } = require('./middleware/errorMiddleware.js');
 
 // routes
 const productsRoutes = require('./routes/productsRoutes.js')
@@ -15,6 +16,9 @@ app.get("/", (request, response) => {
 });
 
 app.use('/api/products', productsRoutes);
+
+app.use(notFound);
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log("server is running on " + PORT);
