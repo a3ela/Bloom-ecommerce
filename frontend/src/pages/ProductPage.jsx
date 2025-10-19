@@ -1,29 +1,28 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { Row, Col, Image, ListGroup, Card, Button } from "react-bootstrap";
 import Rating from "../components/Rating.jsx";
 import { IoMdArrowRoundBack } from "react-icons/io";
+import { useGetProductByIdQuery } from "../slices/productsApiSlice.js";
+import Loader from "../components/Spinner.jsx";
 
 const ProductPage = () => {
-  const [product, setProduct] = useState([]);
-  const { id: productId } = useParams();
-
-  useEffect(() => {
-    const fetchProduct = async () => {
-      const { data } = await axios.get(`/api/products/${productId}`);
-      setProduct(data);
-    };
-
-    fetchProduct();
-  }, [productId]);
+  const { id } = useParams();
+  const { data: product, isLoading, isError } = useGetProductByIdQuery(id);
 
   return (
     <>
       <Link className="btn btn-light my-3" to="/">
         <IoMdArrowRoundBack />
       </Link>
+
+      {isLoading ? (
+        <Loader />
+      ) : isError ? (
+        <h2>Error occurred while fetching product details.</h2>
+      ) : (
+        <>
+      
 
       <Row>
         <Col md={5}>
@@ -73,6 +72,8 @@ const ProductPage = () => {
           </Card>
         </Col>
       </Row>
+        </>
+      )}
     </>
   );
 };
