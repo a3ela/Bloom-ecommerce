@@ -12,17 +12,28 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
-      lowercase: true,
       trim: true,
     },
     password: {
       type: String,
       required: true,
     },
+    lastLogin: {
+      type: Date,
+      default: Date.now,
+    },
+    isVerified: {
+      type: Boolean,
+      default: false
+    },
     isAdmin: {
       type: Boolean,
       default: false,
     },
+    restPasswordToken: String,
+    restPasswordExpireAt: Date,
+    verificationToken: String,
+    verificationTokenExpireAt: Date,
   },
   {
     timestamps: true,
