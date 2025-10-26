@@ -3,6 +3,7 @@ const dotenv = require('dotenv').config();
 const PORT = process.env.PORT || 5000;
 const connectDB = require('./config/db.js');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware.js');
+const cookieParser = require('cookie-parser');
 
 // routes
 const productsRoutes = require('./routes/products.routes.js')
@@ -13,6 +14,7 @@ connectDB();
 
 const app = express();
 app.use(express.json());
+app.use(cookieParser)
 
 app.get("/", (request, response) => {
   response.send("api is running");
@@ -20,6 +22,7 @@ app.get("/", (request, response) => {
 
 app.use('/api/products', productsRoutes);
 app.use('/api/auth', authRoutes);
+
 
 // error handling middlewares
 app.use(notFound);

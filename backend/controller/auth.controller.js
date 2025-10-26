@@ -4,13 +4,12 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { generateVerificationToken } = require("../utils/generateVerificationToken.js");
 const generateTokenAndSetCookie = require("../utils/generateTokenAndSetCookie.js");
-const { sendVerificationEmail, sendWelcomeEmail } = require("../mailtrap/emails.js");
+const { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail, sendResetSuccessEmail } = require("../mailtrap/emails.js");
+const crypto = require("crypto");
 
 require("dotenv").config();
 
-// @desc    Register a new user
-// @route   POST /api/auth/signup
-// @access  Public
+
 const signup = asyncHandler(async (request, response) => {
     const {email, password, name} = request.body;
 
@@ -68,7 +67,26 @@ const verifyEmail = asyncHandler(async (request, response) => {
 });
 
 const login = asyncHandler(async (request, response) => {
-  res.send("Login route");
+  const { email, password } = request.body;
+
+  const user = await User.findOne({email});
+
+  if (!user) {
+    return response.status(400).json({success: false, message: "Invalid credentials"})
+  }
+
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+
+  if (!isPasswordValid) {
+    return response.status(400).json({success: false, message: "Invalid credentials"})
+  }
+
+  generateTokenAndSetCookie(response, user.id);
+
+  user.lastLogin = new Date();
+  await user.save();
+
+  response.status(200).json({ success: true, message: "Logged in successfully.", user: { id: user.id, name: user.name, email: user.email }});
 });
 
 const logout = asyncHandler(async (request, response) => {
@@ -76,4 +94,47 @@ const logout = asyncHandler(async (request, response) => {
   response.json({ success: true, message: "Logged out successfully." });
 });
 
-module.exports = { signup, login, logout, verifyEmail };
+const forgotPassword = asyncHandler(async (request, response) => {
+  const { email } = request.body;
+
+  const user = await User.findOne({ email });
+  
+  if (!user) {
+    return response.status(400).json({ success: false, message: "User with this email does not exist." });
+  }
+
+  // Here you would generate a password reset token and send an email
+  const resetToken = crypto.randomBytes(20).toString('hex');
+  user.resetPasswordToken = resetToken;
+  user.resetPasswordExpireAt = Date.now() + 60 * 60 * 1000; // 1 hour
+  await user.save();
+
+  await sendPasswordResetEmail(user.email, `${process.env.CLIENT_URL}/reset-password/${resetToken}`);
+
+  response.json({ success: true, message: "Password reset email sent." });
+});
+
+const resetPassword = asyncHandler(async (request, response) => {
+  const { token } = request.params;
+  const { password } = request.body;
+ console.log("token: ", token, "newpassword: ", password);
+  const user = await User.findOne({ resetPasswordToken: token, resetPasswordExpireAt: { $gt: Date.now() } });
+  
+  if (!user) {
+    return response.status(400).json({ success: false, message: "Invalid or expired password reset token." });
+  }
+  const hashedPassword = await bcrypt.hash(password, 10);
+console.log('here')
+  user.password = hashedPassword;
+  user.resetPasswordToken = undefined;
+  user.resetPasswordExpireAt = undefined;
+  await user.save();
+  
+  await sendResetSuccessEmail(user.email);
+  response.json({ success: true, message: "Password has been reset successfully." });
+});
+
+const checkAuth = asyncHandler(async (request, response) => {
+  const user = await User.findById(request.userId).select('-password');
+})
+module.exports = { signup, login, logout, verifyEmail, forgotPassword, resetPassword };
