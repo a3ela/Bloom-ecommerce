@@ -137,4 +137,5 @@ console.log('here')
 const checkAuth = asyncHandler(async (request, response) => {
   const user = await User.findById(request.userId).select('-password');
 })
+
 module.exports = { signup, login, logout, verifyEmail, forgotPassword, resetPassword };
