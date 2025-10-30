@@ -1,10 +1,11 @@
 const asyncHandler = require("../middleware/asyncHandler.js");
 const User = require("../models/user.model.js");
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+
 const {
   generateVerificationToken,
 } = require("../utils/generateVerificationToken.js");
+
 const generateTokenAndSetCookie = require("../utils/generateTokenAndSetCookie.js");
 const {
   sendVerificationEmail,
@@ -49,13 +50,11 @@ const signup = asyncHandler(async (request, response) => {
 
   await sendVerificationEmail(user.email, user.verificationToken);
 
-  response
-    .status(201)
-    .json({
-      success: true,
-      message: "User registered successfully. Please verify your email.",
-      user: { id: user.id, name: user.name, email: user.email },
-    });
+  response.status(201).json({
+    success: true,
+    message: "User registered successfully. Please verify your email.",
+    user: { id: user.id, name: user.name, email: user.email },
+  });
 });
 
 const verifyEmail = asyncHandler(async (request, response) => {
@@ -67,12 +66,10 @@ const verifyEmail = asyncHandler(async (request, response) => {
   });
 
   if (!user) {
-    return response
-      .status(400)
-      .json({
-        success: false,
-        message: "Invalid or expired verification code.",
-      });
+    return response.status(400).json({
+      success: false,
+      message: "Invalid or expired verification code.",
+    });
   }
 
   user.isVerified = true;
@@ -103,13 +100,11 @@ const login = asyncHandler(async (request, response) => {
   user.lastLogin = new Date();
   await user.save();
 
-  response
-    .status(200)
-    .json({
-      success: true,
-      message: "Logged in successfully.",
-      user: { id: user.id, name: user.name, email: user.email },
-    });
+  response.status(200).json({
+    success: true,
+    message: "Logged in successfully.",
+    user: { id: user.id, name: user.name, email: user.email },
+  });
 });
 
 const logout = asyncHandler(async (request, response) => {
@@ -123,12 +118,10 @@ const forgotPassword = asyncHandler(async (request, response) => {
   const user = await User.findOne({ email });
 
   if (!user) {
-    return response
-      .status(400)
-      .json({
-        success: false,
-        message: "User with this email does not exist.",
-      });
+    return response.status(400).json({
+      success: false,
+      message: "User with this email does not exist.",
+    });
   }
 
   // Here you would generate a password reset token and send an email
@@ -155,12 +148,10 @@ const resetPassword = asyncHandler(async (request, response) => {
   });
 
   if (!user) {
-    return response
-      .status(400)
-      .json({
-        success: false,
-        message: "Invalid or expired password reset token.",
-      });
+    return response.status(400).json({
+      success: false,
+      message: "Invalid or expired password reset token.",
+    });
   }
   const hashedPassword = await bcrypt.hash(password, 10);
   console.log("here");
