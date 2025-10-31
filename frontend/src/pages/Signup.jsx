@@ -3,18 +3,20 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Form, Button, Row, Col } from "react-bootstrap";
 import FormContainer from "../components/FormContainer.jsx";
-import { useLoginMutation } from "../slices/usersApiSlice.js";
-import Loader from "../components/Loader.jsx";
+import { useSignupMutation } from "../slices/usersApiSlice.js";
 import { setCredentials } from "../slices/authSlice.js";
 import { toast } from "react-toastify";
 
-const LoginPage = () => {
+const Signup = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [login, { isLoading }] = useLoginMutation();
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [signup, { isLoading }] = useSignupMutation();
+
   const { userInfo } = useSelector((state) => state.auth);
 
   const { search } = useLocation();
@@ -29,23 +31,34 @@ const LoginPage = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    try {
-      const res = await login({ email, password }).unwrap();
-      dispatch(setCredentials({ ...res }));
-      navigate(redirect);
-    } catch (err) {
-      toast.error(err?.data?.message || err.error);
-
-      if (err?.data?.message.toLowerCase().includes("not verified")) {
-        navigate("/verify-email", { state: { email } });
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    } else {
+      try {
+        const res = await signup({ name, email, password }).unwrap();
+        toast.success(res.message || 'Verification email sent. Please check your inbox.');
+        navigate('/verify-email', { state: { email } });
+      } catch (err) {
+        toast.error(err?.data?.message || err.error);
       }
     }
   };
 
   return (
     <FormContainer>
-      <h1>Sign In</h1>
+      <h1>Sign Up</h1>
       <Form onSubmit={submitHandler}>
+        <Form.Group controlId="name" className="my-3">
+          <Form.Label>Name</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          ></Form.Control>
+        </Form.Group>
+
         <Form.Group controlId="email" className="my-3">
           <Form.Label>Email Address</Form.Label>
           <Form.Control
@@ -66,16 +79,26 @@ const LoginPage = () => {
           ></Form.Control>
         </Form.Group>
 
+        <Form.Group controlId="confirmPassword" className="my-3">
+          <Form.Label>Confirm Password</Form.Label>
+          <Form.Control
+            type="password"
+            placeholder="Confirm password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+          ></Form.Control>
+        </Form.Group>
+
         <Button type="submit" variant="primary" disabled={isLoading}>
-          {isLoading ? "Signing In..." : "Sign In"}
+          {isLoading ? "Signing Up..." : "Sign Up"}
         </Button>
       </Form>
 
       <Row className="py-3">
         <Col>
-          New Customer?{" "}
-          <Link to={redirect ? `/signup?redirect=${redirect}` : "/signup"}>
-            Register
+          Already have an account?{" "}
+          <Link to={redirect ? `/login?redirect=${redirect}` : "/login"}>
+            Login
           </Link>
         </Col>
       </Row>
@@ -83,4 +106,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default Signup;
