@@ -40,25 +40,22 @@ const signup = asyncHandler(async (request, response) => {
     email,
     password: hashedPassword,
     verificationToken,
-    verificationTokenExpireAt: Date.now() + 24 * 60 * 1000, // 24 hours
+    verificationTokenExpireAt: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
+    
   });
 
   await user.save();
-
-  // jwt
-  generateTokenAndSetCookie(response, user.id);
 
   await sendVerificationEmail(user.email, user.verificationToken);
 
   response.status(201).json({
     success: true,
     message: "User registered successfully. Please verify your email.",
-    user: { id: user.id, name: user.name, email: user.email },
   });
 });
 
 const verifyEmail = asyncHandler(async (request, response) => {
-  const { code } = request.body;
+  const code = request.body.code || request.query.token;
 
   const user = await User.findOne({
     verificationToken: code,
@@ -78,9 +75,39 @@ const verifyEmail = asyncHandler(async (request, response) => {
 
   await user.save();
 
+  generateTokenAndSetCookie(response, user.id);
   await sendWelcomeEmail(user.email, user.name);
 
-  response.json({ success: true, message: "Email verified successfully." });
+  response.json({ success: true, message: "Email verified successfully.", user: { id: user.id, name: user.name, email: user.email } });
+});
+
+const resendVerificationEmail = asyncHandler(async (request, response) => {
+  const { email } = request.body;
+
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    return response
+      .status(400)
+      .json({ success: false, message: "User with this email does not exist." });
+  }
+  if (user.isVerified) {
+    return response
+      .status(400)
+      .json({ success: false, message: "Email is already verified." });
+  }
+
+  const verificationToken = generateVerificationToken();
+  user.verificationToken = verificationToken;
+  user.verificationTokenExpireAt = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+  await user.save();
+
+  await sendVerificationEmail(user.email, user.verificationToken);
+
+  response.json({
+    success: true,
+    message: "Verification email resent. Please check your inbox.",
+  });
 });
 
 const login = asyncHandler(async (request, response) => {
@@ -95,6 +122,12 @@ const login = asyncHandler(async (request, response) => {
       .json({ success: false, message: "Invalid email or password" });
   }
 
+  if (!user.isVerified) {
+    return response.status(400).json({
+      success: false,
+      message: 'Email not verified, Please verify your email to log in.',
+    })
+  }
   generateTokenAndSetCookie(response, user.id);
 
   user.lastLogin = new Date();
@@ -178,4 +211,5 @@ module.exports = {
   verifyEmail,
   forgotPassword,
   resetPassword,
+  resendVerificationEmail
 };
