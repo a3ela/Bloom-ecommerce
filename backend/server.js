@@ -9,6 +9,7 @@ const cookieParser = require('cookie-parser');
 const productsRoutes = require('./routes/products.routes.js')
 const authRoutes = require('./routes/auth.routes.js')
 const userRoutes = require('./routes/user.routes.js')
+const orderRoutes = require('./routes/order.route.js')
 
 // connect with DB
 connectDB();
@@ -24,7 +25,7 @@ app.get("/", (request, response) => {
 app.use('/api/products', productsRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
-
+app.use('/api/orders', orderRoutes);
 
 // error handling middlewares
 app.use(notFound);

@@ -201,7 +201,7 @@ const resetPassword = asyncHandler(async (request, response) => {
 });
 
 const checkAuth = asyncHandler(async (request, response) => {
-  const user = await User.findById(request.userId).select("-password");
+  const user = await User.findById(request.user).select("-password");
 });
 
 module.exports = {

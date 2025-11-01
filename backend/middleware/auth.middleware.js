@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const asyncHandler = require("./asyncHandler.js");
+const User = require("../models/user.model.js");
 
 const protect = asyncHandler(async (req, res, next) => {
   const token = req.cookies.token;
@@ -12,7 +13,14 @@ const protect = asyncHandler(async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.userId = decoded.id;
+    const user = await User.findById(decoded.id).select("-password");
+    if (!user) {
+      return res
+        .status(401)
+        .json({ success: false, message: "User not found" });
+    }
+
+    req.user = user;
     next();
   } catch (error) {
     return res
@@ -23,6 +31,7 @@ const protect = asyncHandler(async (req, res, next) => {
 
 // Placeholder for admin middleware
 const admin = (req, res, next) => {
+
   if (req.user && req.user.isAdmin) {
     next();
   } else {

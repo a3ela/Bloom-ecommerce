@@ -20,6 +20,6 @@ router.route("/:id")
     .delete(protect, deleteUser);
 
 router.route("/")
-    .get(getUsers);
+    .get(protect, admin, getUsers);
 
 module.exports = router;

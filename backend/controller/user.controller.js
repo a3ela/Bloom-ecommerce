@@ -5,7 +5,7 @@ const User = require("../models/user.model.js");
 //@route GET /api/users/profile
 // @access Public
 const getUserProfile = asyncHandler(async (request, response) => {
-  const user = await User.findById(request.userId);
+  const user = await User.findById(request.user);
 
   if (user) {
     response.status(200).json({
@@ -24,7 +24,7 @@ const getUserProfile = asyncHandler(async (request, response) => {
 //@route PUT /api/users/profile
 // @access private
 const updateUserProfile = asyncHandler(async (request, response) => {
-  const user = await User.findById(request.userId);
+  const user = await User.findById(request.user);
 console.log("user", user);
     
   if (user) {
