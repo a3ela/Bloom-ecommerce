@@ -3,15 +3,15 @@ const Order = require("../models/order.model.js");
 
 const addOrder = asyncHandler(async (request, response) => {
 
- const { orderItems, shippingAddress, paymentMethod, itemsPrice, taxPrice, totalPrice } = req.body;
+ const { orderItems, shippingAddress, paymentMethod, itemsPrice, taxPrice, totalPrice } = request.body;
 
   if (!orderItems || orderItems.length === 0) {
-    res.status(400);
+    response.status(400);
     throw new Error("No order items found");
   }
 
   const order = new Order({
-    user: req.user.id,
+    user: request.user.id,
     orderItems: orderItems.map(item => ({
       ...item,
       product: item.id,
@@ -24,7 +24,7 @@ const addOrder = asyncHandler(async (request, response) => {
   });
 
   const createdOrder = await order.save();
-  res.status(201).json(createdOrder);
+  response.status(201).json(createdOrder);
 });
 
 const getOrderById = asyncHandler(async (request, response) => {
@@ -44,17 +44,28 @@ const getUserOrders = asyncHandler(async (request, response) => {
 });
 
 const updateOrderToPaid = asyncHandler(async (request, response) => {
-    const order = await Order.findById(request.params.id);
-    if (order) {
-        order.isPaid = true;
-        order.paidAt = Date.now();
-        const updatedOrder = await order.save();
-        response.json(updatedOrder);
-    } else {
-        response.status(404);
-        throw new Error("Order not found");
-    }
+  const order = await Order.findById(request.params.id);
+
+  if (order) {
+    console.log("✅ Payment update received:", request.body);
+
+    order.isPaid = true;
+    order.paidAt = Date.now();
+    order.paymentResult = {
+      id: request.body.id,
+      status: request.body.status,
+      update_time: request.body.update_time,
+      email_address: request.body?.payer?.email_address || "test@example.com",
+    };
+
+    const updatedOrder = await order.save();
+    response.json(updatedOrder);
+  } else {
+    response.status(404);
+    throw new Error("Order not found");
+  }
 });
+
 
 const updateOrderToDelivered = asyncHandler(async (request, response) => {
     const order = await Order.findById(request.params.id);

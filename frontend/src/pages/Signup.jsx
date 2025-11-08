@@ -1,14 +1,13 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Form, Button, Row, Col } from "react-bootstrap";
 import FormContainer from "../components/FormContainer.jsx";
-import { useSignupMutation } from "../slices/usersApiSlice.js";
-import { setCredentials } from "../slices/authSlice.js";
+import { useSignupMutation } from "../slices/authsApiSlice.js";
+
 import { toast } from "react-toastify";
 
 const Signup = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [name, setName] = useState("");
@@ -37,8 +36,10 @@ const Signup = () => {
     } else {
       try {
         const res = await signup({ name, email, password }).unwrap();
-        toast.success(res.message || 'Verification email sent. Please check your inbox.');
-        navigate('/verify-email', { state: { email } });
+        toast.success(
+          res.message || "Verification email sent. Please check your inbox."
+        );
+        navigate("/verify-email", { state: { email } });
       } catch (err) {
         toast.error(err?.data?.message || err.error);
       }

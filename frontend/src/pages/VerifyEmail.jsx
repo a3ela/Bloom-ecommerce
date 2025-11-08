@@ -3,10 +3,10 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
 import { toast } from "react-toastify";
 import FormContainer from "../components/FormContainer.jsx";
-import { useVerifyEmailMutation } from "../slices/usersApiSlice.js";
+import { useVerifyEmailMutation } from "../slices/authsApiSlice.js";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../slices/authSlice.js";
-import { useResendVerificationEmailMutation } from "../slices/usersApiSlice.js";
+import { useResendVerificationEmailMutation } from "../slices/authsApiSlice.js";
 
 const VerifyEmail = () => {
   const [code, setCode] = useState("");
