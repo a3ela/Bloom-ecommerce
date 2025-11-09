@@ -9,10 +9,9 @@ const getUserProfile = asyncHandler(async (request, response) => {
 
   if (user) {
     response.status(200).json({
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      isAdmin: user.isAdmin,
+      success: true,
+    message: "Logged in successfully.",
+    user: { id: user.id, name: user.name, email: user.email },
     });
   } else {
     response.status(404);

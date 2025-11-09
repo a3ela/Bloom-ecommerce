@@ -247,7 +247,7 @@ const Order = () => {
 
               {loadingDeliver && <Loader />}
               {userInfo &&
-                userInfo.isAdmin &&
+                userInfo.user.isAdmin &&
                 order.isPaid &&
                 !order.isDelivered && (
                   <ListGroup.Item>

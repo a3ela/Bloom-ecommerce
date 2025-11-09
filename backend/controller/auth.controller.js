@@ -41,7 +41,6 @@ const signup = asyncHandler(async (request, response) => {
     password: hashedPassword,
     verificationToken,
     verificationTokenExpireAt: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
-    
   });
 
   await user.save();
@@ -78,7 +77,11 @@ const verifyEmail = asyncHandler(async (request, response) => {
   generateTokenAndSetCookie(response, user.id);
   await sendWelcomeEmail(user.email, user.name);
 
-  response.json({ success: true, message: "Email verified successfully.", user: { id: user.id, name: user.name, email: user.email } });
+  response.json({
+    success: true,
+    message: "Email verified successfully.",
+    user: { id: user.id, name: user.name, email: user.email },
+  });
 });
 
 const resendVerificationEmail = asyncHandler(async (request, response) => {
@@ -89,7 +92,10 @@ const resendVerificationEmail = asyncHandler(async (request, response) => {
   if (!user) {
     return response
       .status(400)
-      .json({ success: false, message: "User with this email does not exist." });
+      .json({
+        success: false,
+        message: "User with this email does not exist.",
+      });
   }
   if (user.isVerified) {
     return response
@@ -125,8 +131,8 @@ const login = asyncHandler(async (request, response) => {
   if (!user.isVerified) {
     return response.status(400).json({
       success: false,
-      message: 'Email not verified, Please verify your email to log in.',
-    })
+      message: "Email not verified, Please verify your email to log in.",
+    });
   }
   generateTokenAndSetCookie(response, user.id);
 
@@ -136,7 +142,12 @@ const login = asyncHandler(async (request, response) => {
   response.status(200).json({
     success: true,
     message: "Logged in successfully.",
-    user: { id: user.id, name: user.name, email: user.email },
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin,
+    },
   });
 });
 
@@ -211,5 +222,5 @@ module.exports = {
   verifyEmail,
   forgotPassword,
   resetPassword,
-  resendVerificationEmail
+  resendVerificationEmail,
 };

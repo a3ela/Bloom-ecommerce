@@ -81,8 +81,8 @@ const updateOrderToDelivered = asyncHandler(async (request, response) => {
 });
 
 const getOrders = asyncHandler(async (request, response) => {
-    const orders = await Order.find({});
-    response.json(orders);
+    const orders = await Order.find({}).populate('user', 'id name');
+    response.status(200).json(orders);
 });
 
 module.exports = {

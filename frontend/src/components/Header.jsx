@@ -6,7 +6,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { useLogoutMutation } from "../slices/authsApiSlice.js";
 import { logout } from "../slices/authSlice.js";
 
-
 const Header = () => {
   const { cartItems } = useSelector((state) => state.cart);
   const { userInfo } = useSelector((state) => state.auth);
@@ -48,10 +47,34 @@ const Header = () => {
                 </Nav.Link>
               </LinkContainer>
               {userInfo ? (
-                <NavDropdown title={userInfo.name} id="username">
+                <NavDropdown
+                  title={userInfo.name || userInfo.user.name}
+                  id="username"
+                >
                   <LinkContainer to="/profile">
                     <NavDropdown.Item>Profile</NavDropdown.Item>
                   </LinkContainer>
+
+                  {userInfo.isAdmin ||
+                  (userInfo.user && userInfo.user.isAdmin) ? (
+                    <LinkContainer to="/admin/productlist">
+                      <NavDropdown.Item>productlist</NavDropdown.Item>
+                    </LinkContainer>
+                  ) : null}
+
+                  {userInfo.isAdmin ||
+                  (userInfo.user && userInfo.user.isAdmin) ? (
+                    <LinkContainer to="/admin/userlist">
+                      <NavDropdown.Item>Userslist</NavDropdown.Item>
+                    </LinkContainer>
+                  ) : null}
+
+                  {userInfo.isAdmin ||
+                  (userInfo.user && userInfo.user.isAdmin) ? (
+                    <LinkContainer to="/admin/orderlist">
+                      <NavDropdown.Item>Orderlist</NavDropdown.Item>
+                    </LinkContainer>
+                  ) : null}
 
                   <NavDropdown.Item onClick={logoutHandler}>
                     Logout

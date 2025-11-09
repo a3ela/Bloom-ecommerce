@@ -11,7 +11,7 @@ import "./assets/styles/bootstrap.custom.css";
 import "./assets/styles/index.css";
 import { Provider } from "react-redux";
 import store from "./store.js";
-import { PayPalScriptProvider } from '@paypal/react-paypal-js'
+import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 
 // Pages
 import PrivateRoute from "./components/PrivateRoute.jsx";
@@ -25,8 +25,10 @@ import VerifyEmail from "./pages/VerifyEmail.jsx";
 import ShippingPage from "./pages/ShippingPage.jsx";
 import Payment from "./pages/Payment.jsx";
 import PlaceOrder from "./pages/PlaceOrder.jsx";
-import Orders from './pages/Orders.jsx';
-import Profile from './pages/Profile.jsx';
+import Orders from "./pages/Orders.jsx";
+import Profile from "./pages/Profile.jsx";
+import AdminRoute from "./components/AdminRoute.jsx";
+import OrderList from "./pages/admin/OrderList.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -42,8 +44,12 @@ const router = createBrowserRouter(
         <Route path="/shipping" element={<ShippingPage />} />
         <Route path="/payment" element={<Payment />} />
         <Route path="/placeorder" element={<PlaceOrder />} />
-        <Route path='/order/:id' element={<Orders />} />
-        <Route path='/profile' element={<Profile />} />
+        <Route path="/order/:id" element={<Orders />} />
+        <Route path="/profile" element={<Profile />} />
+      </Route>
+
+      <Route element={<AdminRoute />}>
+        <Route path="/admin/orderlist" element={<OrderList />} />
       </Route>
     </Route>
   )
