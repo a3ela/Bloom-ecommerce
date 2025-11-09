@@ -3,8 +3,9 @@ import { Navbar, Nav, Container, Badge, NavDropdown } from "react-bootstrap";
 import { FaShoppingCart, FaUser } from "react-icons/fa";
 import { LinkContainer } from "react-router-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
-import { useLogoutMutation } from "../slices/usersApiSlice.js";
+import { useLogoutMutation } from "../slices/authsApiSlice.js";
 import { logout } from "../slices/authSlice.js";
+
 
 const Header = () => {
   const { cartItems } = useSelector((state) => state.cart);
@@ -47,7 +48,7 @@ const Header = () => {
                 </Nav.Link>
               </LinkContainer>
               {userInfo ? (
-                <NavDropdown title={userInfo.user.name} id="username">
+                <NavDropdown title={userInfo.name} id="username">
                   <LinkContainer to="/profile">
                     <NavDropdown.Item>Profile</NavDropdown.Item>
                   </LinkContainer>
