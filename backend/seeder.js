@@ -2,9 +2,9 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 const users = require("./data/users.js");
 const products = require("./data/products.js");
-const User = require("./models/userModel.js");
-const Product = require("./models/productModel.js");
-const Order = require("./models/orderModel.js");
+const User = require("./models/user.model.js");
+const Product = require("./models/product.model.js");
+const Order = require("./models/order.model.js");
 const connectDB = require("./config/db.js");
 
 connectDB();
@@ -34,7 +34,7 @@ const importData = async () => {
 const destroyData = async () => {
   try {
     await Order.deleteMany();
-    await Prodct.deleteMany();
+    await Product.deleteMany();
     await User.deleteMany();
 
     console.log("data Destroyed!");

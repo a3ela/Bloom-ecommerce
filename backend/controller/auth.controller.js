@@ -40,7 +40,7 @@ const signup = asyncHandler(async (request, response) => {
     email,
     password: hashedPassword,
     verificationToken,
-    verificationTokenExpireAt: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
+    verificationTokenExpireAt: Date.now() + 24 * 60 * 60 * 1000,
   });
 
   await user.save();
@@ -105,7 +105,7 @@ const resendVerificationEmail = asyncHandler(async (request, response) => {
 
   const verificationToken = generateVerificationToken();
   user.verificationToken = verificationToken;
-  user.verificationTokenExpireAt = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+  user.verificationTokenExpireAt = Date.now() + 24 * 60 * 60 * 1000;
   await user.save();
 
   await sendVerificationEmail(user.email, user.verificationToken);

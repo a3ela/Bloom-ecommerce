@@ -44,7 +44,7 @@ const Order = () => {
         paypalDispatch({
           type: "resetOptions",
           value: {
-            "client-id": paypal.clientId,
+            clientId: paypal.clientId,
             currency: "USD",
           },
         });
@@ -222,7 +222,7 @@ const Order = () => {
                 <ListGroup.Item>
                   {loadingPay && <Loader />}
 
-                  {isPending ? (
+                  {isPending || !window.paypal ? (
                     <Loader />
                   ) : (
                     <div>
@@ -234,11 +234,13 @@ const Order = () => {
                       </Button>
 
                       <div>
-                        <PayPalButtons
-                          createOrder={createOrder}
-                          onApprove={onApprove}
-                          onError={onError}
-                        ></PayPalButtons>
+                        {window.paypal && (
+                          <PayPalButtons
+                            createOrder={createOrder}
+                            onApprove={onApprove}
+                            onError={onError}
+                          ></PayPalButtons>
+                        )}
                       </div>
                     </div>
                   )}

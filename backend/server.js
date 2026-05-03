@@ -11,8 +11,6 @@ const orderRoutes = require("./routes/order.route.js");
 dotenv.config();
 const PORT = process.env.PORT || 5000;
 
-connectDB();
-
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
@@ -34,4 +32,14 @@ app.use("/api/orders", orderRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+const startServer = async () => {
+  const dbConnected = await connectDB();
+
+  if (!dbConnected && process.env.USE_SEED_FALLBACK === "true") {
+    console.log("Server started with temporary seed products fallback.");
+  }
+
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+};
+
+startServer();
